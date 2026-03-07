@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Qsu! - Rhythm Game v2.0</title>
+    <title>Qsu! - Rhythm Game v2.2 (Hold Trail)</title>
     
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
@@ -18,13 +18,11 @@
             object-fit: cover; filter: brightness(0.3) contrast(1.1);
         }
 
-        /* Vuruş Parıltısı (Cila 1) */
         #flash {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: white; opacity: 0; pointer-events: none; z-index: 2000; transition: opacity 0.1s;
         }
 
-        /* Beat Pulse Efekti (Cila 3) */
         @keyframes beatPulse {
             0% { transform: translate(-50%, -50%) scale(1); }
             50% { transform: translate(-50%, -50%) scale(1.02); }
@@ -32,7 +30,6 @@
         }
         .pulse-active { animation: beatPulse 0.5s infinite ease-in-out; }
 
-        /* Ana Menü */
         #menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.95) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: 0.5s; }
         .menu-content { text-align: center; }
         h1 { font-size: 85px; letter-spacing: 20px; margin: 0; font-weight: 900; text-shadow: 0 0 30px rgba(0,210,255,0.4); }
@@ -42,7 +39,6 @@
         .btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 18px 60px; color: #fff; font-size: 18px; cursor: pointer; font-weight: bold; width: 400px; transition: 0.3s; border-radius: 10px; backdrop-filter: blur(5px); }
         .btn:hover { background: #00d2ff; color: #000; box-shadow: 0 0 40px rgba(0,210,255,0.6); transform: translateY(-3px); }
 
-        /* Sağ Üst Panel */
         #custom-panel {
             position: absolute; top: 0; right: -350px; width: 300px; height: 100%;
             background: rgba(0, 0, 0, 0.9); padding: 40px 25px;
@@ -58,13 +54,18 @@
         
         .play-custom { width: 100%; background: #00d2ff; border: none; padding: 15px; border-radius: 10px; color: black; font-weight: bold; cursor: pointer; margin-top: 20px; }
 
-        /* Oyun İçi UI */
         #ui { position: absolute; top: 40px; left: 40px; font-size: 28px; font-weight: 900; z-index: 100; opacity: 0; transition: 0.5s; letter-spacing: 2px; }
         #guide { position: absolute; width: 35px; height: 35px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; box-shadow: 0 0 20px white; display: none; transition: 0.15s ease-out; }
         #combo-ui { position: absolute; bottom: 50px; width: 100%; text-align: center; font-size: 60px; font-weight: 900; z-index: 100; pointer-events: none; opacity: 0; transition: 0.2s; color: #00d2ff; text-shadow: 0 0 25px rgba(0,210,255,0.5); }
         
-        .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; }
+        .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; transition: background 0.2s, transform 0.1s; }
+        .note small { font-size: 10px; letter-spacing: 1px; margin-top: -5px; }
+        .note.holding { background: rgba(255, 255, 255, 0.3) !important; transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 30px white; }
+        
         .approach { position: absolute; border: 3px solid; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 11; }
+        
+        .hold-trail { position: absolute; background: rgba(150, 150, 150, 0.2); border-radius: 50px; pointer-events: none; z-index: 8; transform-origin: top center; transition: background 0.2s; }
+        .hold-trail.success { background: rgba(0, 255, 0, 0.3); box-shadow: 0 0 20px rgba(0,255,0,0.5); }
         
         .shake { animation: shakeAnim 0.15s ease-in-out; }
         @keyframes shakeAnim { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(6px, 6px); } 75% { transform: translate(-6px, -6px); } }
@@ -95,7 +96,7 @@
 
         <div id="menu">
             <div class="menu-content">
-                <div class="version-badge">DEMO v2.0</div>
+                <div class="version-badge">DEMO v2.2 (Hold Trail)</div>
                 <h1>Qsu!</h1>
                 <p style="opacity: 0.4; margin-bottom: 40px; letter-spacing: 5px;">BEAT THE MUSIC</p>
                 
@@ -140,7 +141,12 @@
         let combo = 0;
         let isPlaying = false;
         let activeNotes = [];
-        const sequence = [{code:"KeyD", label:"D", color:"#ff00ff"}, {code:"KeyF", label:"F", color:"#00d2ff"}, {code:"KeyJ", label:"J", color:"#ffff00"}, {code:"KeyK", label:"K", color:"#00ff00"}];
+        let keysPressed = {};
+
+        const sequence = [
+            {code:"Digit1", label:"1", color:"#00d2ff"}, 
+            {code:"Digit2", label:"2", color:"#ff00ff"}
+        ];
         let seqIndex = 0;
 
         function togglePanel(isOpen) {
@@ -160,15 +166,15 @@
             if (songId === 1) {
                 music.src = "Cry For Me WA WA WA.mp3";
                 bgVideo.src = "cryforme.mp4";
-                launchGame(700);
+                launchGame(750);
             } else if (songId === 2) {
                 music.src = "[HQ] An Enigmatic Encounter V2 - Undertale Last Breath (Phase 3).mp3";
                 bgVideo.src = "enigmatic.mp4";
-                launchGame(480);
+                launchGame(500);
             } else if (songId === 3) {
                 music.src = "Girlfriends - New Computers.mp3";
                 bgVideo.src = "THE RESET.mp4";
-                launchGame(500);
+                launchGame(550);
             }
         }
 
@@ -216,64 +222,161 @@
         }
 
         function moveAndSpawn() {
-            let x = Math.random() * (window.innerWidth - 300) + 150;
-            let y = Math.random() * (window.innerHeight - 300) + 150;
-            guide.style.left = x + 'px'; guide.style.top = y + 'px';
+            let startX = Math.random() * (window.innerWidth - 400) + 200;
+            let startY = Math.random() * (window.innerHeight/2 - 200) + window.innerHeight/2 + 100;
+            
+            guide.style.left = startX + 'px'; guide.style.top = startY + 'px';
 
             const item = sequence[seqIndex];
+            const isLong = Math.random() > 0.7;
+
+            let trailEl = null;
+            let targetY = startY;
+            const holdDistance = 250;
+
+            if (isLong) {
+                targetY = startY - holdDistance;
+
+                trailEl = document.createElement('div');
+                trailEl.className = 'hold-trail';
+                trailEl.style.left = (startX - 45) + 'px';
+                trailEl.style.top = targetY + 'px';
+                trailEl.style.width = '90px';
+                trailEl.style.height = holdDistance + 'px';
+                viewport.appendChild(trailEl);
+            }
+
             const nEl = document.createElement('div');
-            nEl.className = 'note'; nEl.style.left = x+'px'; nEl.style.top = y+'px';
-            nEl.style.color = item.color; nEl.style.borderColor = item.color; nEl.innerText = item.label;
+            nEl.className = 'note'; nEl.style.left = startX+'px'; nEl.style.top = startY+'px';
+            nEl.style.color = item.color; nEl.style.borderColor = item.color;
+            nEl.innerHTML = item.label + (isLong ? "<br><small>HOLD</small>" : "");
 
             const aEl = document.createElement('div');
-            aEl.className = 'approach'; aEl.style.left = x+'px'; aEl.style.top = y+'px';
+            aEl.className = 'approach'; aEl.style.left = startX+'px'; aEl.style.top = startY+'px';
             aEl.style.borderColor = item.color;
 
             viewport.appendChild(nEl); viewport.appendChild(aEl);
-            activeNotes.push({ el: nEl, app: aEl, code: item.code, scale: 4.0, hit: false });
+            
+            activeNotes.push({ 
+                el: nEl, 
+                app: aEl,
+                trailEl: trailEl,
+                code: item.code, 
+                scale: 4.0, 
+                hit: false, 
+                isLong: isLong, 
+                startX: startX,
+                startY: startY,
+                targetY: targetY,
+                holdTicks: 0,
+                maxTicks: 50,
+                completed: false 
+            });
             seqIndex = (seqIndex + 1) % sequence.length;
         }
 
         function gameLoop() {
             if (!isPlaying) return;
-            activeNotes.forEach((n, i) => {
+            
+            // Eğer herhangi bir notada "başarıyla basılıp tutuluyorsa", 
+            // diğer notaların yaklaşma halkalarının küçülmesini durdur.
+            const isHoldingAny = activeNotes.some(n => n.hit && n.isLong && !n.completed);
+
+            for (let i = activeNotes.length - 1; i >= 0; i--) {
+                const n = activeNotes[i];
+                
                 if (!n.hit) {
-                    n.scale -= 0.052;
-                    n.app.style.width = (90 * n.scale) + 'px';
-                    n.app.style.height = (90 * n.scale) + 'px';
-                    if (n.scale <= 0.7) {
+                    // SADECE HOLD YAPILMIYORSA küçülmeye devam et
+                    if (!isHoldingAny) {
+                        n.scale -= 0.05;
+                        n.app.style.width = (90 * n.scale) + 'px';
+                        n.app.style.height = (90 * n.scale) + 'px';
+                        
+                        if (n.scale <= 0.75) {
+                            triggerShake();
+                            removeNote(n);
+                        }
+                    }
+                } else if (n.isLong && !n.completed) {
+                    // HOLD AŞAMASI
+                    if (keysPressed[n.code]) {
+                        n.holdTicks++;
+                        n.el.classList.add('holding');
+                        
+                        if(n.trailEl) n.trailEl.classList.add('success');
+
+                        score += 5;
+                        scoreEl.innerText = score.toString().padStart(6, '0');
+
+                        const progress = n.holdTicks / n.maxTicks;
+                        const currentY = n.startY + (n.targetY - n.startY) * progress;
+                        
+                        guide.style.left = n.startX + 'px';
+                        guide.style.top = n.targetY + 'px';
+
+                        n.el.style.top = currentY + 'px';
+                        
+                        if(n.trailEl) n.trailEl.style.height = (n.startY - currentY) + 'px';
+
+                        if (n.holdTicks >= n.maxTicks) {
+                            n.completed = true;
+                            successFinish(n);
+                        }
+                    } else {
+                        // Elini vaktinden önce çekerse hata
                         triggerShake();
-                        n.el.remove(); n.app.remove();
-                        activeNotes.splice(i, 1);
+                        removeNote(n);
                     }
                 }
-            });
+            }
             requestAnimationFrame(gameLoop);
+        }
+
+        function removeNote(n) {
+            if(n.el.parentNode) n.el.remove();
+            if(n.app && n.app.parentNode) n.app.remove();
+            if(n.trailEl && n.trailEl.parentNode) n.trailEl.remove();
+            activeNotes = activeNotes.filter(item => item !== n);
+        }
+
+        function successFinish(n) {
+            score += 300;
+            combo++;
+            flashEl.style.opacity = "0.2";
+            setTimeout(() => flashEl.style.opacity = "0", 100);
+            
+            comboCountEl.innerText = combo;
+            comboUiEl.style.opacity = "1";
+            scoreEl.innerText = score.toString().padStart(6, '0');
+            rankEl.innerText = getRank(score);
+
+            n.el.classList.add('hit-fx'); 
+            if(n.trailEl) n.trailEl.remove();
+            setTimeout(() => removeNote(n), 300);
         }
 
         window.addEventListener('keydown', (e) => {
             if (!isPlaying) return;
-            const idx = activeNotes.findIndex(n => n.code === e.code && n.scale > 0.7 && n.scale < 2.8 && !n.hit);
+            if (keysPressed[e.code]) return;
+            keysPressed[e.code] = true;
+
+            const idx = activeNotes.findIndex(n => n.code === e.code && n.scale > 0.75 && n.scale < 2.5 && !n.hit);
+            
             if (idx !== -1) {
                 const n = activeNotes[idx];
-                n.hit = true; 
-                score += 300;
-                combo++;
-                
-                // Cila: Flash & UI Update
-                flashEl.style.opacity = "0.2";
-                setTimeout(() => flashEl.style.opacity = "0", 100);
-                
-                comboCountEl.innerText = combo;
-                comboUiEl.style.opacity = "1";
-                scoreEl.innerText = score.toString().padStart(6, '0');
-                rankEl.innerText = getRank(score);
-
-                n.el.classList.add('hit-fx'); n.app.remove();
-                setTimeout(() => { n.el.remove(); activeNotes = activeNotes.filter(item => item !== n); }, 300);
-            } else if (["KeyD","KeyF","KeyJ","KeyK"].includes(e.code)) {
+                n.hit = true;
+                if (!n.isLong) {
+                    successFinish(n);
+                } else {
+                    if(n.app) n.app.remove();
+                }
+            } else if (["Digit1", "Digit2"].includes(e.code)) {
                 triggerShake();
             }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keysPressed[e.code] = false;
         });
     </script>
 </body>
