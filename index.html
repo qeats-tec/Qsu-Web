@@ -8,7 +8,7 @@
     <link rel="apple-touch-icon" href="logo.png">
 
     <style>
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: white; cursor: none; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: white; cursor: none; touch-action: manipulation; }
         
         #viewport { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
 
@@ -33,8 +33,14 @@
         #menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.95) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: 0.5s; }
         .menu-content { text-align: center; }
         h1 { font-size: 85px; letter-spacing: 20px; margin: 0; font-weight: 900; text-shadow: 0 0 30px rgba(0,210,255,0.4); }
-        .version-badge { background: #00d2ff; color: black; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: bold; letter-spacing: 2px; display: inline-block; margin-bottom: 40px; }
+        .version-badge { background: #00d2ff; color: black; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: bold; letter-spacing: 2px; display: inline-block; margin-bottom: 20px; }
         
+        /* Mod Paneli Stilleri */
+        .mod-container { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; }
+        .mod-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.3); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; backdrop-filter: blur(5px); }
+        .mod-btn:hover { background: rgba(0, 210, 255, 0.2); }
+        .mod-btn.active { background: #00d2ff; color: black; box-shadow: 0 0 20px rgba(0,210,255,0.5); border-color: transparent; }
+
         .btn-list { display: flex; flex-direction: column; gap: 15px; align-items: center; }
         .btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 18px 60px; color: #fff; font-size: 18px; cursor: pointer; font-weight: bold; width: 400px; transition: 0.3s; border-radius: 10px; backdrop-filter: blur(5px); }
         .btn:hover { background: #00d2ff; color: #000; box-shadow: 0 0 40px rgba(0,210,255,0.6); transform: translateY(-3px); }
@@ -58,7 +64,7 @@
         #guide { position: absolute; width: 35px; height: 35px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; box-shadow: 0 0 20px white; display: none; transition: 0.15s ease-out; }
         #combo-ui { position: absolute; bottom: 50px; width: 100%; text-align: center; font-size: 60px; font-weight: 900; z-index: 100; pointer-events: none; opacity: 0; transition: 0.2s; color: #00d2ff; text-shadow: 0 0 25px rgba(0,210,255,0.5); }
         
-        .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; transition: background 0.2s, transform 0.1s; }
+        .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; transition: background 0.2s, transform 0.1s; cursor: pointer; user-select: none; }
         .note small { font-size: 10px; letter-spacing: 1px; margin-top: -5px; }
         .note.holding { background: rgba(255, 255, 255, 0.3) !important; transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 30px white; }
         
@@ -98,8 +104,13 @@
             <div class="menu-content">
                 <div class="version-badge">DEMO v2.2</div>
                 <h1>Qsu!</h1>
-                <p style="opacity: 0.4; margin-bottom: 40px; letter-spacing: 5px;">BEAT THE MUSIC</p>
+                <p style="opacity: 0.4; margin-bottom: 30px; letter-spacing: 5px;">BEAT THE MUSIC</p>
                 
+                <div class="mod-container">
+                    <button id="mod-mirror" class="mod-btn" onclick="toggleMod('mirror')">MIRROR</button>
+                    <button id="mod-fast" class="mod-btn" onclick="toggleMod('fast')">DOUBLE TIME (1.5x)</button>
+                </div>
+
                 <div class="btn-list">
                     <button class="btn" onclick="start(1)">CRY FOR ME</button>
                     <button class="btn" onclick="start(2)">ENIGMATIC ENCOUNTER</button>
@@ -142,12 +153,18 @@
         let isPlaying = false;
         let activeNotes = [];
         let keysPressed = {};
+        let activeMods = { mirror: false, fast: false };
 
         const sequence = [
             {code:"Digit1", label:"1", color:"#00d2ff"}, 
             {code:"Digit2", label:"2", color:"#ff00ff"}
         ];
         let seqIndex = 0;
+
+        function toggleMod(mod) {
+            activeMods[mod] = !activeMods[mod];
+            document.getElementById(`mod-${mod}`).classList.toggle('active');
+        }
 
         function togglePanel(isOpen) {
             panel.classList.toggle('active', isOpen);
@@ -198,6 +215,15 @@
         }
 
         function launchGame(spawnRate) {
+            if (activeMods.fast) {
+                music.playbackRate = 1.5;
+                bgVideo.playbackRate = 1.5;
+                spawnRate = spawnRate / 1.5;
+            } else {
+                music.playbackRate = 1.0;
+                bgVideo.playbackRate = 1.0;
+            }
+
             bgVideo.load();
             bgVideo.play();
             bgVideo.classList.add('pulse-active');
@@ -222,7 +248,8 @@
         }
 
         function moveAndSpawn() {
-            let startX = Math.random() * (window.innerWidth - 400) + 200;
+            let rawX = Math.random() * (window.innerWidth - 400) + 200;
+            let startX = activeMods.mirror ? (window.innerWidth - rawX) : rawX;
             let startY = Math.random() * (window.innerHeight/2 - 200) + window.innerHeight/2 + 100;
             
             guide.style.left = startX + 'px'; guide.style.top = startY + 'px';
@@ -236,7 +263,6 @@
 
             if (isLong) {
                 targetY = startY - holdDistance;
-
                 trailEl = document.createElement('div');
                 trailEl.className = 'hold-trail';
                 trailEl.style.left = (startX - 45) + 'px';
@@ -251,6 +277,9 @@
             nEl.style.color = item.color; nEl.style.borderColor = item.color;
             nEl.innerHTML = item.label + (isLong ? "<br><small>HOLD</small>" : "");
 
+            nEl.addEventListener('touchstart', (e) => { e.preventDefault(); handleInteraction(item.code, nEl); });
+            nEl.addEventListener('touchend', (e) => { e.preventDefault(); handleRelease(item.code); });
+
             const aEl = document.createElement('div');
             aEl.className = 'approach'; aEl.style.left = startX+'px'; aEl.style.top = startY+'px';
             aEl.style.borderColor = item.color;
@@ -258,79 +287,55 @@
             viewport.appendChild(nEl); viewport.appendChild(aEl);
             
             activeNotes.push({ 
-                el: nEl, 
-                app: aEl,
-                trailEl: trailEl,
-                code: item.code, 
-                scale: 4.0, 
-                hit: false, 
-                isLong: isLong, 
-                startX: startX,
-                startY: startY,
-                targetY: targetY,
-                holdTicks: 0,
-                maxTicks: 50,
-                completed: false 
+                el: nEl, app: aEl, trailEl: trailEl, code: item.code, scale: 4.0, hit: false, 
+                isLong: isLong, startX: startX, startY: startY, targetY: targetY, 
+                holdTicks: 0, maxTicks: 50, completed: false 
             });
             seqIndex = (seqIndex + 1) % sequence.length;
         }
 
         function gameLoop() {
             if (!isPlaying) return;
-            
-            // Eğer herhangi bir notada "başarıyla basılıp tutuluyorsa", 
-            // diğer notaların yaklaşma halkalarının küçülmesini durdur.
             const isHoldingAny = activeNotes.some(n => n.hit && n.isLong && !n.completed);
-
             for (let i = activeNotes.length - 1; i >= 0; i--) {
                 const n = activeNotes[i];
-                
                 if (!n.hit) {
-                    // SADECE HOLD YAPILMIYORSA küçülmeye devam et
                     if (!isHoldingAny) {
-                        n.scale -= 0.05;
+                        n.scale -= (activeMods.fast ? 0.075 : 0.05);
                         n.app.style.width = (90 * n.scale) + 'px';
                         n.app.style.height = (90 * n.scale) + 'px';
-                        
-                        if (n.scale <= 0.75) {
-                            triggerShake();
-                            removeNote(n);
-                        }
+                        if (n.scale <= 0.75) { triggerShake(); removeNote(n); }
                     }
                 } else if (n.isLong && !n.completed) {
-                    // HOLD AŞAMASI
                     if (keysPressed[n.code]) {
                         n.holdTicks++;
                         n.el.classList.add('holding');
-                        
                         if(n.trailEl) n.trailEl.classList.add('success');
-
-                        score += 5;
-                        scoreEl.innerText = score.toString().padStart(6, '0');
-
+                        score += 5; scoreEl.innerText = score.toString().padStart(6, '0');
                         const progress = n.holdTicks / n.maxTicks;
                         const currentY = n.startY + (n.targetY - n.startY) * progress;
-                        
-                        guide.style.left = n.startX + 'px';
-                        guide.style.top = n.targetY + 'px';
-
+                        guide.style.left = n.startX + 'px'; guide.style.top = n.targetY + 'px';
                         n.el.style.top = currentY + 'px';
-                        
                         if(n.trailEl) n.trailEl.style.height = (n.startY - currentY) + 'px';
-
-                        if (n.holdTicks >= n.maxTicks) {
-                            n.completed = true;
-                            successFinish(n);
-                        }
-                    } else {
-                        // Elini vaktinden önce çekerse hata
-                        triggerShake();
-                        removeNote(n);
-                    }
+                        if (n.holdTicks >= n.maxTicks) { n.completed = true; successFinish(n); }
+                    } else { triggerShake(); removeNote(n); }
                 }
             }
             requestAnimationFrame(gameLoop);
         }
+
+        function handleInteraction(code) {
+            if (!isPlaying) return;
+            keysPressed[code] = true;
+            const idx = activeNotes.findIndex(n => n.code === code && n.scale > 0.75 && n.scale < 2.5 && !n.hit);
+            if (idx !== -1) {
+                const n = activeNotes[idx];
+                n.hit = true;
+                if (!n.isLong) successFinish(n); else if(n.app) n.app.remove();
+            }
+        }
+
+        function handleRelease(code) { keysPressed[code] = false; }
 
         function removeNote(n) {
             if(n.el.parentNode) n.el.remove();
@@ -340,16 +345,11 @@
         }
 
         function successFinish(n) {
-            score += 300;
-            combo++;
-            flashEl.style.opacity = "0.2";
+            score += 300; combo++; flashEl.style.opacity = "0.2";
             setTimeout(() => flashEl.style.opacity = "0", 100);
-            
-            comboCountEl.innerText = combo;
-            comboUiEl.style.opacity = "1";
+            comboCountEl.innerText = combo; comboUiEl.style.opacity = "1";
             scoreEl.innerText = score.toString().padStart(6, '0');
             rankEl.innerText = getRank(score);
-
             n.el.classList.add('hit-fx'); 
             if(n.trailEl) n.trailEl.remove();
             setTimeout(() => removeNote(n), 300);
@@ -358,27 +358,8 @@
         window.addEventListener('keydown', (e) => {
             if (!isPlaying) return;
             if (keysPressed[e.code]) return;
-            keysPressed[e.code] = true;
-
-            const idx = activeNotes.findIndex(n => n.code === e.code && n.scale > 0.75 && n.scale < 2.5 && !n.hit);
-            
-            if (idx !== -1) {
-                const n = activeNotes[idx];
-                n.hit = true;
-                if (!n.isLong) {
-                    successFinish(n);
-                } else {
-                    if(n.app) n.app.remove();
-                }
-            } else if (["Digit1", "Digit2"].includes(e.code)) {
-                triggerShake();
-            }
+            handleInteraction(e.code);
         });
-
-        window.addEventListener('keyup', (e) => {
-            keysPressed[e.code] = false;
-        });
+        window.addEventListener('keyup', (e) => handleRelease(e.code));
     </script>
 </body>
-</html>
-
