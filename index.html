@@ -35,7 +35,6 @@
         h1 { font-size: 85px; letter-spacing: 20px; margin: 0; font-weight: 900; text-shadow: 0 0 30px rgba(0,210,255,0.4); }
         .version-badge { background: #00d2ff; color: black; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: bold; letter-spacing: 2px; display: inline-block; margin-bottom: 20px; }
         
-        /* Mod Paneli Stilleri */
         .mod-container { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; }
         .mod-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.3); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; backdrop-filter: blur(5px); }
         .mod-btn:hover { background: rgba(0, 210, 255, 0.2); }
@@ -61,21 +60,30 @@
         .play-custom { width: 100%; background: #00d2ff; border: none; padding: 15px; border-radius: 10px; color: black; font-weight: bold; cursor: pointer; margin-top: 20px; }
 
         #ui { position: absolute; top: 40px; left: 40px; font-size: 28px; font-weight: 900; z-index: 100; opacity: 0; transition: 0.5s; letter-spacing: 2px; }
-        #guide { position: absolute; width: 35px; height: 35px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; box-shadow: 0 0 20px white; display: none; transition: 0.15s ease-out; }
-        #combo-ui { position: absolute; bottom: 50px; width: 100%; text-align: center; font-size: 60px; font-weight: 900; z-index: 100; pointer-events: none; opacity: 0; transition: 0.2s; color: #00d2ff; text-shadow: 0 0 25px rgba(0,210,255,0.5); }
+        #guide { position: absolute; width: 35px; height: 35px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; box-shadow: 0 0 20px white; display: none; transition: 0.08s ease-out; }
+        #combo-ui { position: absolute; bottom: 50px; width: 100%; text-align: center; font-size: 60px; font-weight: 900; z-index: 100; pointer-events: none; opacity: 0; transition: 0.1s; color: #00d2ff; text-shadow: 0 0 25px rgba(0,210,255,0.5); }
         
-        .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; transition: background 0.2s, transform 0.1s; cursor: pointer; user-select: none; }
+        .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; transition: background 0.1s, transform 0.05s; cursor: pointer; user-select: none; }
         .note small { font-size: 10px; letter-spacing: 1px; margin-top: -5px; }
         .note.holding { background: rgba(255, 255, 255, 0.3) !important; transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 30px white; }
         
-        .approach { position: absolute; border: 3px solid; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 11; }
+        .approach { position: absolute; border: 3px solid; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 11; will-change: width, height; }
         
         .hold-trail { position: absolute; background: rgba(150, 150, 150, 0.2); border-radius: 50px; pointer-events: none; z-index: 8; transform-origin: top center; transition: background 0.2s; }
         .hold-trail.success { background: rgba(0, 255, 0, 0.3); box-shadow: 0 0 20px rgba(0,255,0,0.5); }
         
-        .shake { animation: shakeAnim 0.15s ease-in-out; }
-        @keyframes shakeAnim { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(6px, 6px); } 75% { transform: translate(-6px, -6px); } }
-        .hit-fx { transform: translate(-50%, -50%) scale(2.2) !important; opacity: 0 !important; transition: 0.4s ease-out !important; }
+        .shake { animation: shakeAnim 0.12s ease-in-out; }
+        @keyframes shakeAnim { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(5px, 5px); } 75% { transform: translate(-5px, -5px); } }
+        .hit-fx { transform: translate(-50%, -50%) scale(1.9) !important; opacity: 0 !important; transition: 0.22s ease-out !important; }
+
+        #progress-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.1); z-index: 1500; display: none; }
+        #progress-bar { width: 0%; height: 100%; background: #ffffff; box-shadow: 0 0 10px #ffffff; transition: width 0.1s linear; }
+
+        #game-over-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2500; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+        #game-over-screen.active { opacity: 1; pointer-events: auto; }
+        .go-title { font-size: 50px; font-weight: 900; letter-spacing: 10px; color: #00d2ff; margin-bottom: 30px; text-shadow: 0 0 20px rgba(0,210,255,0.4); }
+        .go-stat { font-size: 24px; margin: 10px 0; font-weight: 600; letter-spacing: 2px; }
+        .go-rank { font-size: 100px; font-weight: 900; color: #ff00ff; text-shadow: 0 0 40px rgba(255,0,255,0.6); margin: 20px 0; }
     </style>
 </head>
 <body>
@@ -102,7 +110,7 @@
 
         <div id="menu">
             <div class="menu-content">
-                <div class="version-badge">DEMO v2.2</div>
+                <div class="version-badge">DEMO v3.4 (ANTI-OVERLAP PATCH)</div>
                 <h1>Qsu!</h1>
                 <p style="opacity: 0.4; margin-bottom: 30px; letter-spacing: 5px;">BEAT THE MUSIC</p>
                 
@@ -130,6 +138,17 @@
         </div>
         
         <div id="guide"></div>
+
+        <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
+
+        <div id="game-over-screen">
+            <div class="go-title">ŞARKI TAMAMLANDI!</div>
+            <div class="go-stat">TOPLAM SKOR: <span id="go-score">000000</span></div>
+            <div class="go-rank" id="go-rank">C</div>
+            <button class="btn" onclick="returnToMenu()" style="margin-top: 30px;">YENİDEN OYNA</button>
+        </div>
     </div>
 
     <audio id="music"></audio>
@@ -148,12 +167,21 @@
         const comboCountEl = document.getElementById('combo-count');
         const comboUiEl = document.getElementById('combo-ui');
         
+        const progressBarContainer = document.getElementById('progress-bar-container');
+        const progressBar = document.getElementById('progress-bar');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const goScore = document.getElementById('go-score');
+        const goRank = document.getElementById('go-rank');
+        
         let score = 0;
         let combo = 0;
         let isPlaying = false;
         let activeNotes = [];
         let keysPressed = {};
         let activeMods = { mirror: false, fast: false };
+
+        let lastSpawnTime = 0;
+        let currentBPMInterval = 0.48; 
 
         const sequence = [
             {code:"Digit1", label:"1", color:"#00d2ff"}, 
@@ -171,10 +199,10 @@
         }
 
         function getRank(s) {
-            if (s > 60000) return 'SS';
-            if (s > 40000) return 'S';
-            if (s > 20000) return 'A';
-            if (s > 10000) return 'B';
+            if (s > 40000) return 'SS';
+            if (s > 25000) return 'S';
+            if (s > 15000) return 'A';
+            if (s > 8000) return 'B';
             return 'C';
         }
 
@@ -183,16 +211,17 @@
             if (songId === 1) {
                 music.src = "Cry For Me WA WA WA.mp3";
                 bgVideo.src = "cryforme.mp4";
-                launchGame(750);
+                currentBPMInterval = 0.50; 
             } else if (songId === 2) {
                 music.src = "[HQ] An Enigmatic Encounter V2 - Undertale Last Breath (Phase 3).mp3";
                 bgVideo.src = "enigmatic.mp4";
-                launchGame(500);
+                currentBPMInterval = 0.44; 
             } else if (songId === 3) {
                 music.src = "Girlfriends - New Computers.mp3";
                 bgVideo.src = "THE RESET.mp4";
-                launchGame(550);
+                currentBPMInterval = 0.46;
             }
+            launchGame();
         }
 
         function startCustom() {
@@ -200,9 +229,10 @@
             const videoFile = document.getElementById('videoInput').files[0];
             if (!audioFile) return alert("Müzik seç!");
             hideMenu();
+            currentBPMInterval = 0.48; 
             music.src = URL.createObjectURL(audioFile);
             if (videoFile) bgVideo.src = URL.createObjectURL(videoFile);
-            launchGame(600);
+            launchGame();
         }
 
         function hideMenu() {
@@ -212,13 +242,21 @@
             openBtn.style.display = 'none';
             ui.style.opacity = '1';
             guide.style.display = 'block';
+            progressBarContainer.style.display = 'block';
         }
 
-        function launchGame(spawnRate) {
+        function launchGame() {
+            score = 0;
+            combo = 0;
+            lastSpawnTime = 0;
+            scoreEl.innerText = "000000";
+            rankEl.innerText = "C";
+            comboCountEl.innerText = "0";
+            comboUiEl.style.opacity = "0";
+
             if (activeMods.fast) {
                 music.playbackRate = 1.5;
                 bgVideo.playbackRate = 1.5;
-                spawnRate = spawnRate / 1.5;
             } else {
                 music.playbackRate = 1.0;
                 bgVideo.playbackRate = 1.0;
@@ -227,14 +265,12 @@
             bgVideo.load();
             bgVideo.play();
             bgVideo.classList.add('pulse-active');
+            
             music.play().then(() => {
                 isPlaying = true;
-                const producer = () => {
-                    if(!isPlaying) return;
-                    if(activeNotes.length < 3) moveAndSpawn();
-                    setTimeout(producer, spawnRate);
-                };
-                producer();
+                gameLoop();
+            }).catch(err => {
+                isPlaying = true;
                 gameLoop();
             });
         }
@@ -247,15 +283,31 @@
             comboUiEl.style.opacity = "0";
         }
 
+        // [GÜNCELLENDİ] Güçlendirilmiş Çakışma Önleme Algoritması
         function moveAndSpawn() {
-            let rawX = Math.random() * (window.innerWidth - 400) + 200;
-            let startX = activeMods.mirror ? (window.innerWidth - rawX) : rawX;
-            let startY = Math.random() * (window.innerHeight/2 - 200) + window.innerHeight/2 + 100;
+            let startX, startY;
+            let overlap = true;
+            let attempts = 0;
+
+            while (overlap && attempts < 25) {
+                // Ekran sınırlarına sıkışmayı engellemek için safe-zone aralıkları korundu
+                let rawX = Math.random() * (window.innerWidth - 450) + 225;
+                startX = activeMods.mirror ? (window.innerWidth - rawX) : rawX;
+                startY = Math.random() * (window.innerHeight/2 - 200) + window.innerHeight/2 + 50;
+                
+                // [YENİ] Mesafe kontrolü 220 piksele çıkarılarak butonların birbirine değmesi dahi engellendi
+                overlap = activeNotes.some(n => {
+                    let dx = n.startX - startX;
+                    let dy = n.startY - startY;
+                    return Math.sqrt(dx * dx + dy * dy) < 220; 
+                });
+                attempts++;
+            }
             
             guide.style.left = startX + 'px'; guide.style.top = startY + 'px';
 
             const item = sequence[seqIndex];
-            const isLong = Math.random() > 0.7;
+            const isLong = Math.random() > 0.90; 
 
             let trailEl = null;
             let targetY = startY;
@@ -277,7 +329,7 @@
             nEl.style.color = item.color; nEl.style.borderColor = item.color;
             nEl.innerHTML = item.label + (isLong ? "<br><small>HOLD</small>" : "");
 
-            nEl.addEventListener('touchstart', (e) => { e.preventDefault(); handleInteraction(item.code, nEl); });
+            nEl.addEventListener('touchstart', (e) => { e.preventDefault(); handleInteraction(item.code); });
             nEl.addEventListener('touchend', (e) => { e.preventDefault(); handleRelease(item.code); });
 
             const aEl = document.createElement('div');
@@ -287,24 +339,46 @@
             viewport.appendChild(nEl); viewport.appendChild(aEl);
             
             activeNotes.push({ 
-                el: nEl, app: aEl, trailEl: trailEl, code: item.code, scale: 4.0, hit: false, 
+                el: nEl, app: aEl, trailEl: trailEl, code: item.code, scale: 3.5, hit: false, 
                 isLong: isLong, startX: startX, startY: startY, targetY: targetY, 
-                holdTicks: 0, maxTicks: 50, completed: false 
+                holdTicks: 0, maxTicks: 50, completed: false, spawnTime: performance.now()
             });
             seqIndex = (seqIndex + 1) % sequence.length;
         }
 
         function gameLoop() {
             if (!isPlaying) return;
+
+            const time = music.currentTime;
+
+            if (music.duration) {
+                const pct = (time / music.duration) * 100;
+                progressBar.style.width = pct + '%';
+            }
+
+            let targetInterval = activeMods.fast ? currentBPMInterval / 1.5 : currentBPMInterval;
+            
+            if (time > 20 && time < 75) {
+                targetInterval = targetInterval * 0.95; 
+            }
+
+            // [YENİ] Ekranda aynı anda en fazla 2 buton kalabilir (Üst üste yığılmayı kökten keser)
+            if (time - lastSpawnTime >= targetInterval) {
+                if (activeNotes.filter(n => !n.hit).length < 2) { 
+                    moveAndSpawn();
+                    lastSpawnTime = time; 
+                }
+            }
+
             const isHoldingAny = activeNotes.some(n => n.hit && n.isLong && !n.completed);
             for (let i = activeNotes.length - 1; i >= 0; i--) {
                 const n = activeNotes[i];
                 if (!n.hit) {
                     if (!isHoldingAny) {
-                        n.scale -= (activeMods.fast ? 0.075 : 0.05);
+                        n.scale -= (activeMods.fast ? 0.075 : 0.048); 
                         n.app.style.width = (90 * n.scale) + 'px';
                         n.app.style.height = (90 * n.scale) + 'px';
-                        if (n.scale <= 0.75) { triggerShake(); removeNote(n); }
+                        if (n.scale <= 0.65) { triggerShake(); removeNote(n); }
                     }
                 } else if (n.isLong && !n.completed) {
                     if (keysPressed[n.code]) {
@@ -324,12 +398,19 @@
             requestAnimationFrame(gameLoop);
         }
 
+        // [YENİ] Sıralı Basım ve Güvenli Etkileşim Filtresi
         function handleInteraction(code) {
             if (!isPlaying) return;
             keysPressed[code] = true;
-            const idx = activeNotes.findIndex(n => n.code === code && n.scale > 0.75 && n.scale < 2.5 && !n.hit);
-            if (idx !== -1) {
-                const n = activeNotes[idx];
+            
+            // Aktif, vurulmamış ve geçerli scale aralığındaki notaları listele
+            let candidates = activeNotes.filter(n => n.code === code && n.scale >= 0.65 && n.scale <= 2.6 && !n.hit);
+            
+            if (candidates.length > 0) {
+                // [KRİTİK] İlk gelene (scale değeri en küçük olana) öncelik vererek sırayı garanti ediyoruz
+                candidates.sort((a, b) => a.scale - b.scale);
+                const n = candidates[0];
+                
                 n.hit = true;
                 if (!n.isLong) successFinish(n); else if(n.app) n.app.remove();
             }
@@ -346,20 +427,42 @@
 
         function successFinish(n) {
             score += 300; combo++; flashEl.style.opacity = "0.2";
-            setTimeout(() => flashEl.style.opacity = "0", 100);
+            setTimeout(() => flashEl.style.opacity = "0", 80);
             comboCountEl.innerText = combo; comboUiEl.style.opacity = "1";
             scoreEl.innerText = score.toString().padStart(6, '0');
             rankEl.innerText = getRank(score);
             n.el.classList.add('hit-fx'); 
             if(n.trailEl) n.trailEl.remove();
-            setTimeout(() => removeNote(n), 300);
+            setTimeout(() => removeNote(n), 220);
+        }
+
+        music.onended = () => {
+            isPlaying = false;
+            bgVideo.classList.remove('pulse-active');
+            [...activeNotes].forEach(n => removeNote(n));
+            goScore.innerText = score.toString().padStart(6, '0');
+            goRank.innerText = getRank(score);
+            gameOverScreen.classList.add('active');
+        };
+
+        function returnToMenu() {
+            gameOverScreen.classList.remove('active');
+            progressBarContainer.style.display = 'none';
+            ui.style.opacity = '0';
+            guide.style.display = 'none';
+            
+            const menuEl = document.getElementById('menu');
+            menuEl.style.display = 'flex';
+            setTimeout(() => menuEl.style.opacity = '1', 50);
+            openBtn.style.display = 'block';
         }
 
         window.addEventListener('keydown', (e) => {
             if (!isPlaying) return;
-            if (keysPressed[e.code]) return;
+            if (keysPressed[e.code]) return; 
             handleInteraction(e.code);
         });
         window.addEventListener('keyup', (e) => handleRelease(e.code));
     </script>
 </body>
+</html>
