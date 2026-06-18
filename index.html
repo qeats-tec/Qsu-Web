@@ -64,11 +64,11 @@
         #guide { position: absolute; width: 35px; height: 35px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; box-shadow: 0 0 20px white; display: none; transition: 0.15s ease-out; }
         #combo-ui { position: absolute; bottom: 50px; width: 100%; text-align: center; font-size: 60px; font-weight: 900; z-index: 100; pointer-events: none; opacity: 0; transition: 0.2s; color: #00d2ff; text-shadow: 0 0 25px rgba(0,210,255,0.5); }
         
-        .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; transition: background 0.2s, transform 0.1s; cursor: pointer; user-select: none; }
+        .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; transition: background 0.2s, transform 0.1s; cursor: pointer; user-select: none; will-change: transform, opacity; }
         .note small { font-size: 10px; letter-spacing: 1px; margin-top: -5px; }
         .note.holding { background: rgba(255, 255, 255, 0.3) !important; transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 30px white; }
         
-        .approach { position: absolute; border: 3px solid; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 11; }
+        .approach { position: absolute; border: 3px solid; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 11; will-change: transform; }
         
         .hold-trail { position: absolute; background: rgba(150, 150, 150, 0.2); border-radius: 50px; pointer-events: none; z-index: 8; transform-origin: top center; transition: background 0.2s; }
         .hold-trail.success { background: rgba(0, 255, 0, 0.3); box-shadow: 0 0 20px rgba(0,255,0,0.5); }
@@ -76,6 +76,17 @@
         .shake { animation: shakeAnim 0.15s ease-in-out; }
         @keyframes shakeAnim { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(6px, 6px); } 75% { transform: translate(-6px, -6px); } }
         .hit-fx { transform: translate(-50%, -50%) scale(2.2) !important; opacity: 0 !important; transition: 0.4s ease-out !important; }
+
+        /* [YENİ] Vuruş değerlendirme yazıları (300, 100, MISS) için stil */
+        .hit-rating {
+            position: absolute; font-size: 26px; font-weight: 900; letter-spacing: 2px;
+            text-shadow: 0 0 15px black; pointer-events: none; z-index: 105;
+            animation: ratingFade 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes ratingFade {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(-50%, -120%) scale(1.3); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -161,6 +172,9 @@
         ];
         let seqIndex = 0;
 
+        // [YENİ] Kararlı Delta-Time takibi için zamanlayıcı referansı
+        let lastFrameTime = performance.now();
+
         function toggleMod(mod) {
             activeMods[mod] = !activeMods[mod];
             document.getElementById(`mod-${mod}`).classList.toggle('active');
@@ -227,15 +241,18 @@
             bgVideo.load();
             bgVideo.play();
             bgVideo.classList.add('pulse-active');
+            
             music.play().then(() => {
                 isPlaying = true;
+                lastFrameTime = performance.now(); // Döngüyü sıfırla
+
                 const producer = () => {
                     if(!isPlaying) return;
-                    if(activeNotes.length < 3) moveAndSpawn();
+                    if(activeNotes.length < 4) moveAndSpawn(); // Limit 4 yapıldı, akıcılık sağlandı
                     setTimeout(producer, spawnRate);
                 };
                 producer();
-                gameLoop();
+                requestAnimationFrame(gameLoop);
             });
         }
 
@@ -245,6 +262,18 @@
             viewport.classList.add('shake');
             combo = 0;
             comboUiEl.style.opacity = "0";
+        }
+
+        // [YENİ] Ekranda puan durumunu (300, 100, MISS) fırlatan görsel efekt fonksiyonu
+        function showHitRating(x, y, text, color) {
+            const ratingEl = document.createElement('div');
+            ratingEl.className = 'hit-rating';
+            ratingEl.style.left = x + 'px';
+            ratingEl.style.top = y + 'px';
+            ratingEl.style.color = color;
+            ratingEl.innerText = text;
+            viewport.appendChild(ratingEl);
+            setTimeout(() => ratingEl.remove(), 400);
         }
 
         function moveAndSpawn() {
@@ -277,12 +306,14 @@
             nEl.style.color = item.color; nEl.style.borderColor = item.color;
             nEl.innerHTML = item.label + (isLong ? "<br><small>HOLD</small>" : "");
 
-            nEl.addEventListener('touchstart', (e) => { e.preventDefault(); handleInteraction(item.code, nEl); });
+            nEl.addEventListener('touchstart', (e) => { e.preventDefault(); handleInteraction(item.code); });
             nEl.addEventListener('touchend', (e) => { e.preventDefault(); handleRelease(item.code); });
 
             const aEl = document.createElement('div');
             aEl.className = 'approach'; aEl.style.left = startX+'px'; aEl.style.top = startY+'px';
             aEl.style.borderColor = item.color;
+            // İlk scale değerini CSS yerine doğrudan JS üzerinden yönetmek için tanımlıyoruz
+            aEl.style.transform = 'translate(-50%, -50%) scale(4.0)';
 
             viewport.appendChild(nEl); viewport.appendChild(aEl);
             
@@ -294,31 +325,55 @@
             seqIndex = (seqIndex + 1) % sequence.length;
         }
 
-        function gameLoop() {
+        function gameLoop(now) {
             if (!isPlaying) return;
+
+            // Delta time hesabı (FPS değişimlerinde oyun hızını sabit tutar)
+            const dt = (now - lastFrameTime) / 16.666;
+            lastFrameTime = now;
+
             const isHoldingAny = activeNotes.some(n => n.hit && n.isLong && !n.completed);
+            
             for (let i = activeNotes.length - 1; i >= 0; i--) {
                 const n = activeNotes[i];
                 if (!n.hit) {
                     if (!isHoldingAny) {
-                        n.scale -= (activeMods.fast ? 0.075 : 0.05);
-                        n.app.style.width = (90 * n.scale) + 'px';
-                        n.app.style.height = (90 * n.scale) + 'px';
-                        if (n.scale <= 0.75) { triggerShake(); removeNote(n); }
+                        // Küçülme hızını dt ile çarparak stabil hale getiriyoruz
+                        n.scale -= (activeMods.fast ? 0.075 : 0.05) * dt;
+                        n.app.style.transform = `translate(-50%, -50%) scale(${n.scale})`;
+                        
+                        // Kaçırma eşiği (0.80'in altına inerse artık basılamaz, MISS olur)
+                        if (n.scale <= 0.80) { 
+                            showHitRating(n.startX, n.startY, "MISS", "#ff3838");
+                            triggerShake(); 
+                            removeNote(n); 
+                        }
                     }
                 } else if (n.isLong && !n.completed) {
                     if (keysPressed[n.code]) {
-                        n.holdTicks++;
+                        n.holdTicks += dt;
                         n.el.classList.add('holding');
                         if(n.trailEl) n.trailEl.classList.add('success');
-                        score += 5; scoreEl.innerText = score.toString().padStart(6, '0');
+                        
+                        score += Math.round(5 * dt); 
+                        scoreEl.innerText = score.toString().padStart(6, '0');
+                        
                         const progress = n.holdTicks / n.maxTicks;
                         const currentY = n.startY + (n.targetY - n.startY) * progress;
+                        
                         guide.style.left = n.startX + 'px'; guide.style.top = n.targetY + 'px';
                         n.el.style.top = currentY + 'px';
+                        
                         if(n.trailEl) n.trailEl.style.height = (n.startY - currentY) + 'px';
-                        if (n.holdTicks >= n.maxTicks) { n.completed = true; successFinish(n); }
-                    } else { triggerShake(); removeNote(n); }
+                        if (n.holdTicks >= n.maxTicks) { 
+                            n.completed = true; 
+                            successFinish(n, 300, "PERFECT", "#00ffcc"); 
+                        }
+                    } else { 
+                        showHitRating(n.startX, n.startY, "BREAK", "#ff9d00");
+                        triggerShake(); 
+                        removeNote(n); 
+                    }
                 }
             }
             requestAnimationFrame(gameLoop);
@@ -327,11 +382,29 @@
         function handleInteraction(code) {
             if (!isPlaying) return;
             keysPressed[code] = true;
-            const idx = activeNotes.findIndex(n => n.code === code && n.scale > 0.75 && n.scale < 2.5 && !n.hit);
+            
+            // Ekrandaki basılmamış en eski/uygun notayı bul
+            const idx = activeNotes.findIndex(n => n.code === code && !n.hit);
+            
             if (idx !== -1) {
                 const n = activeNotes[idx];
-                n.hit = true;
-                if (!n.isLong) successFinish(n); else if(n.app) n.app.remove();
+                // Tam basılması gereken an n.scale'in 1.0 olduğu andır. Sapmayı ölçüyoruz.
+                const accuracy = Math.abs(n.scale - 1.0);
+
+                if (accuracy < 0.20) {
+                    // Kusursuz vuruş
+                    n.hit = true;
+                    if (!n.isLong) successFinish(n, 300, "300", "#00ffcc"); else if(n.app) n.app.remove();
+                } else if (accuracy < 0.45) {
+                    // Erken veya geç vuruş
+                    n.hit = true;
+                    if (!n.isLong) successFinish(n, 100, "100", "#ffcc00"); else if(n.app) n.app.remove();
+                } else if (accuracy < 0.65) {
+                    // Kötü vuruş
+                    n.hit = true;
+                    if (!n.isLong) successFinish(n, 50, "50", "#ff6600"); else if(n.app) n.app.remove();
+                }
+                // Belirlenen aralıkların dışındaysa tuşa basılsa bile döngü onu MISS olarak yakalayacak.
             }
         }
 
@@ -344,12 +417,20 @@
             activeNotes = activeNotes.filter(item => item !== n);
         }
 
-        function successFinish(n) {
-            score += 300; combo++; flashEl.style.opacity = "0.2";
+        function successFinish(n, calculatedPoints, ratingText, ratingColor) {
+            score += calculatedPoints; 
+            combo++; 
+            flashEl.style.opacity = "0.2";
             setTimeout(() => flashEl.style.opacity = "0", 100);
-            comboCountEl.innerText = combo; comboUiEl.style.opacity = "1";
+            
+            // Değerlendirme yazısını fırlat (300, 100, 50)
+            showHitRating(n.startX, n.startY, ratingText, ratingColor);
+
+            comboCountEl.innerText = combo; 
+            comboUiEl.style.opacity = "1";
             scoreEl.innerText = score.toString().padStart(6, '0');
             rankEl.innerText = getRank(score);
+            
             n.el.classList.add('hit-fx'); 
             if(n.trailEl) n.trailEl.remove();
             setTimeout(() => removeNote(n), 300);
@@ -363,3 +444,4 @@
         window.addEventListener('keyup', (e) => handleRelease(e.code));
     </script>
 </body>
+</html>
