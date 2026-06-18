@@ -13,9 +13,10 @@
         #viewport { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
 
         #bg-video {
-            position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%;
-            width: auto; height: auto; z-index: -1; transform: translate(-50%, -50%);
-            object-fit: cover; filter: brightness(0.3) contrast(1.1);
+            position: absolute; top: 50%; left: 50%; width: 100vw; height: 56.25vw; /* 16:9 ratio */
+            min-height: 100vh; min-width: 177.77vh;
+            z-index: -1; transform: translate(-50%, -50%);
+            object-fit: cover; filter: brightness(0.25) contrast(1.1); pointer-events: none;
         }
 
         #flash {
@@ -31,18 +32,30 @@
         .pulse-active { animation: beatPulse 0.5s infinite ease-in-out; }
 
         #menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.95) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: 0.5s; }
-        .menu-content { text-align: center; }
-        h1 { font-size: 85px; letter-spacing: 20px; margin: 0; font-weight: 900; text-shadow: 0 0 30px rgba(0,210,255,0.4); }
-        .version-badge { background: #00d2ff; color: black; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: bold; letter-spacing: 2px; display: inline-block; margin-bottom: 20px; }
+        .menu-content { text-align: center; max-height: 90vh; overflow-y: auto; padding: 20px; }
+        h1 { font-size: 65px; letter-spacing: 15px; margin: 0; font-weight: 900; text-shadow: 0 0 30px rgba(0,210,255,0.4); }
+        .version-badge { background: #00d2ff; color: black; padding: 5px 15px; border-radius: 50px; font-size: 11px; font-weight: bold; letter-spacing: 2px; display: inline-block; margin-bottom: 15px; }
         
-        .mod-container { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; }
-        .mod-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.3); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; backdrop-filter: blur(5px); }
+        #profile-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 210, 255, 0.2); padding: 12px 25px; border-radius: 15px; margin-bottom: 20px; backdrop-filter: blur(10px); display: inline-block; }
+        .lvl-text { font-size: 18px; font-weight: 900; color: #00d2ff; letter-spacing: 1px; }
+        .xp-bar-bg { width: 200px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 8px; overflow: hidden; }
+        .xp-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00d2ff, #ff00ff); transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .mod-container { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .mod-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.3); color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; transition: 0.3s; backdrop-filter: blur(5px); }
         .mod-btn:hover { background: rgba(0, 210, 255, 0.2); }
         .mod-btn.active { background: #00d2ff; color: black; box-shadow: 0 0 20px rgba(0,210,255,0.5); border-color: transparent; }
 
-        .btn-list { display: flex; flex-direction: column; gap: 15px; align-items: center; }
-        .btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 18px 60px; color: #fff; font-size: 18px; cursor: pointer; font-weight: bold; width: 400px; transition: 0.3s; border-radius: 10px; backdrop-filter: blur(5px); }
-        .btn:hover { background: #00d2ff; color: #000; box-shadow: 0 0 40px rgba(0,210,255,0.6); transform: translateY(-3px); }
+        .btn-list { display: flex; flex-direction: column; gap: 10px; align-items: center; max-height: 40vh; overflow-y: auto; padding-right: 5px; }
+        .btn { position: relative; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 14px 30px; color: #fff; font-size: 14px; cursor: pointer; font-weight: bold; width: 450px; transition: 0.3s; border-radius: 10px; backdrop-filter: blur(5px); text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        .btn:not(.locked):hover { background: #00d2ff; color: #000; box-shadow: 0 0 40px rgba(0,210,255,0.6); transform: translateY(-2px); }
+        .btn.locked { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05); color: rgba(255,255,255,0.2); cursor: not-allowed; }
+        .btn .badge { font-size: 10px; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,0.1); }
+        .btn:not(.locked) .badge { background: rgba(0, 210, 255, 0.2); color: #00d2ff; }
+        .btn:not(.locked):hover .badge { background: black; color: #00d2ff; }
+
+        .btn-list::-webkit-scrollbar { width: 6px; }
+        .btn-list::-webkit-scrollbar-thumb { background: rgba(0, 210, 255, 0.3); border-radius: 10px; }
 
         #custom-panel {
             position: absolute; top: 0; right: -350px; width: 300px; height: 100%;
@@ -63,36 +76,54 @@
         #guide { position: absolute; width: 35px; height: 35px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; box-shadow: 0 0 20px white; display: none; transition: 0.08s ease-out; }
         #combo-ui { position: absolute; bottom: 50px; width: 100%; text-align: center; font-size: 60px; font-weight: 900; z-index: 100; pointer-events: none; opacity: 0; transition: 0.1s; color: #00d2ff; text-shadow: 0 0 25px rgba(0,210,255,0.5); }
         
+        /* Yenilenen Zarif Tuş Tasarımı ve Efektleri */
         .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; transition: background 0.1s, transform 0.05s; cursor: pointer; user-select: none; }
         .note small { font-size: 10px; letter-spacing: 1px; margin-top: -5px; }
         .note.holding { background: rgba(255, 255, 255, 0.3) !important; transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 30px white; }
         
-        .approach { position: absolute; border: 3px solid; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 11; will-change: width, height; }
+        /* Geri Getirilen Yok Olma (Hit) Efekti */
+        .note.hit-fx {
+            animation: hitFadeOut 0.22s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            pointer-events: none;
+        }
+        @keyframes hitFadeOut {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; background: rgba(255,255,255,0.2); }
+            100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
+        }
         
+        .approach { position: absolute; border: 3px solid; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 11; will-change: width, height; }
         .hold-trail { position: absolute; background: rgba(150, 150, 150, 0.2); border-radius: 50px; pointer-events: none; z-index: 8; transform-origin: top center; transition: background 0.2s; }
         .hold-trail.success { background: rgba(0, 255, 0, 0.3); box-shadow: 0 0 20px rgba(0,255,0,0.5); }
         
         .shake { animation: shakeAnim 0.12s ease-in-out; }
         @keyframes shakeAnim { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(5px, 5px); } 75% { transform: translate(-5px, -5px); } }
-        .hit-fx { transform: translate(-50%, -50%) scale(1.9) !important; opacity: 0 !important; transition: 0.22s ease-out !important; }
+
+        .burst-ring { position: absolute; border: 4px solid #00d2ff; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%) scale(0.8); opacity: 1; z-index: 15; animation: ringOut 0.25s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
+        @keyframes ringOut { 100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; } }
 
         #progress-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.1); z-index: 1500; display: none; }
         #progress-bar { width: 0%; height: 100%; background: #ffffff; box-shadow: 0 0 10px #ffffff; transition: width 0.1s linear; }
 
         #game-over-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2500; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
         #game-over-screen.active { opacity: 1; pointer-events: auto; }
-        .go-title { font-size: 50px; font-weight: 900; letter-spacing: 10px; color: #00d2ff; margin-bottom: 30px; text-shadow: 0 0 20px rgba(0,210,255,0.4); }
-        .go-stat { font-size: 24px; margin: 10px 0; font-weight: 600; letter-spacing: 2px; }
-        .go-rank { font-size: 100px; font-weight: 900; color: #ff00ff; text-shadow: 0 0 40px rgba(255,0,255,0.6); margin: 20px 0; }
+        .go-title { font-size: 50px; font-weight: 900; letter-spacing: 10px; color: #00d2ff; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0,210,255,0.4); }
+        .go-stat { font-size: 24px; margin: 8px 0; font-weight: 600; letter-spacing: 2px; }
+        .go-xp { font-size: 20px; color: #ff00ff; margin-bottom: 20px; font-weight: bold; }
+        .go-rank { font-size: 100px; font-weight: 900; color: #ff00ff; text-shadow: 0 0 40px rgba(255,0,255,0.6); margin: 10px 0; }
+
+        #level-up-toast { position: absolute; top: -100px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #00d2ff, #ff00ff); color: black; font-size: 32px; font-weight: 900; padding: 20px 60px; border-radius: 50px; box-shadow: 0 0 50px rgba(0,210,255,0.6); z-index: 3000; transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); letter-spacing: 5px; }
+        #level-up-toast.active { top: 50px; }
     </style>
 </head>
 <body>
 
     <div id="viewport">
         <div id="flash"></div>
-        <video id="bg-video" muted loop playsinline></video>
+        <video id="bg-video" loop muted playsinline></video>
 
         <button id="openBtn" class="toggle-panel-btn" onclick="togglePanel(true)">🎵 ŞARKI EKLE</button>
+
+        <div id="level-up-toast">LEVEL UP!</div>
 
         <div id="custom-panel">
             <button style="background:none; border:none; color:white; font-size:24px; cursor:pointer;" onclick="togglePanel(false)">✕</button>
@@ -102,7 +133,7 @@
                 <input type="file" id="audioInput" accept="audio/*">
             </div>
             <div class="input-group">
-                <label>MP4 Dosyası</label>
+                <label>Arka Plan Videosu (İsteğe Bağlı)</label>
                 <input type="file" id="videoInput" accept="video/*">
             </div>
             <button class="play-custom" onclick="startCustom()">Qsu! BAŞLAT ▶</button>
@@ -110,9 +141,14 @@
 
         <div id="menu">
             <div class="menu-content">
-                <div class="version-badge">DEMO v3.4 (ANTI-OVERLAP PATCH)</div>
+                <div class="version-badge">ALPHA v4.4 (FEELING UPDATE)</div>
                 <h1>Qsu!</h1>
-                <p style="opacity: 0.4; margin-bottom: 30px; letter-spacing: 5px;">BEAT THE MUSIC</p>
+                
+                <div id="profile-card">
+                    <div class="lvl-text">LEVEL <span id="menu-lvl">1</span></div>
+                    <div class="xp-bar-bg"><div id="menu-xp-fill" class="xp-bar-fill"></div></div>
+                    <div style="font-size:11px; opacity:0.5; margin-top:5px;"><span id="menu-xp-text">0 / 5000</span> XP</div>
+                </div>
                 
                 <div class="mod-container">
                     <button id="mod-mirror" class="mod-btn" onclick="toggleMod('mirror')">MIRROR</button>
@@ -120,9 +156,24 @@
                 </div>
 
                 <div class="btn-list">
-                    <button class="btn" onclick="start(1)">CRY FOR ME</button>
-                    <button class="btn" onclick="start(2)">ENIGMATIC ENCOUNTER</button>
-                    <button class="btn" onclick="start(3)">THE RESET (MEME)</button>
+                    <button id="song-1" class="btn" onclick="start(1)">
+                        <span>1. MANDE (PHONK)</span> <span class="badge">LVL 1</span>
+                    </button>
+                    <button id="song-2" class="btn" onclick="start(2)">
+                        <span>2. CRY FOR ME WA WA WA</span> <span id="badge-2" class="badge">LVL 2 KİLİTLİ</span>
+                    </button>
+                    <button id="song-3" class="btn" onclick="start(3)">
+                        <span>3. BLUE LOCK - OPENING</span> <span id="badge-3" class="badge">LVL 3 KİLİTLİ</span>
+                    </button>
+                    <button id="song-4" class="btn" onclick="start(4)">
+                        <span>4. THE RESET (UNDERTALE)</span> <span id="badge-4" class="badge">LVL 4 KİLİTLİ</span>
+                    </button>
+                    <button id="song-5" class="btn" onclick="start(5)">
+                        <span>5. BACHIRA THEME (NADA NADA)</span> <span id="badge-5" class="badge">LVL 5 KİLİTLİ</span>
+                    </button>
+                    <button id="song-6" class="btn" onclick="start(6)">
+                        <span>6. AN ENIGMATIC ENCOUNTER</span> <span id="badge-6" class="badge">LVL 6 KİLİTLİ</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -145,9 +196,10 @@
 
         <div id="game-over-screen">
             <div class="go-title">ŞARKI TAMAMLANDI!</div>
+            <div class="go-xp" id="go-xp">+0 XP KAZANILDI!</div>
             <div class="go-stat">TOPLAM SKOR: <span id="go-score">000000</span></div>
             <div class="go-rank" id="go-rank">C</div>
-            <button class="btn" onclick="returnToMenu()" style="margin-top: 30px;">YENİDEN OYNA</button>
+            <button class="btn" onclick="returnToMenu()" style="margin-top: 20px; justify-content: center;">YENİDEN OYNA</button>
         </div>
     </div>
 
@@ -155,11 +207,11 @@
 
     <script>
         const music = document.getElementById('music');
+        const bgVideo = document.getElementById('bg-video');
         const guide = document.getElementById('guide');
         const scoreEl = document.getElementById('score');
         const rankEl = document.getElementById('rank');
         const flashEl = document.getElementById('flash');
-        const bgVideo = document.getElementById('bg-video');
         const viewport = document.getElementById('viewport');
         const panel = document.getElementById('custom-panel');
         const openBtn = document.getElementById('openBtn');
@@ -172,7 +224,15 @@
         const gameOverScreen = document.getElementById('game-over-screen');
         const goScore = document.getElementById('go-score');
         const goRank = document.getElementById('go-rank');
-        
+        const goXpEl = document.getElementById('go-xp');
+        const toast = document.getElementById('level-up-toast');
+
+        let player = {
+            level: parseInt(localStorage.getItem('qsu_level')) || 1,
+            xp: parseInt(localStorage.getItem('qsu_xp')) || 0
+        };
+        const xpPerLevel = 5000; 
+
         let score = 0;
         let combo = 0;
         let isPlaying = false;
@@ -189,6 +249,47 @@
         ];
         let seqIndex = 0;
 
+        updateMenuProfile();
+
+        function updateMenuProfile() {
+            document.getElementById('menu-lvl').innerText = player.level;
+            const pct = (player.xp / xpPerLevel) * 100;
+            document.getElementById('menu-xp-fill').style.width = pct + '%';
+            document.getElementById('menu-xp-text').innerText = `${player.xp} / ${xpPerLevel}`;
+
+            for (let i = 2; i <= 6; i++) {
+                let btn = document.getElementById(`song-${i}`);
+                let badge = document.getElementById(`badge-${i}`);
+                if (btn && badge) {
+                    if (player.level >= i) {
+                        btn.classList.remove('locked');
+                        badge.innerText = "AÇIK";
+                    } else {
+                        btn.classList.add('locked');
+                        badge.innerText = `LVL ${i} KİLİTLİ`;
+                    }
+                }
+            }
+        }
+
+        function addXP(amount) {
+            player.xp += amount;
+            let leveledUp = false;
+            while (player.xp >= xpPerLevel) {
+                player.xp -= xpPerLevel;
+                player.level++;
+                leveledUp = true;
+            }
+            localStorage.setItem('qsu_level', player.level);
+            localStorage.setItem('qsu_xp', player.xp);
+            
+            if (leveledUp) {
+                toast.classList.add('active');
+                setTimeout(() => toast.classList.remove('active'), 2500);
+            }
+            updateMenuProfile();
+        }
+
         function toggleMod(mod) {
             activeMods[mod] = !activeMods[mod];
             document.getElementById(`mod-${mod}`).classList.toggle('active');
@@ -199,27 +300,41 @@
         }
 
         function getRank(s) {
-            if (s > 40000) return 'SS';
-            if (s > 25000) return 'S';
-            if (s > 15000) return 'A';
-            if (s > 8000) return 'B';
+            if (s > 45000) return 'SS';
+            if (s > 30000) return 'S';
+            if (s > 18000) return 'A';
+            if (s > 9000) return 'B';
             return 'C';
         }
 
         function start(songId) {
+            if (player.level < songId) return;
+
             hideMenu();
             if (songId === 1) {
-                music.src = "Cry For Me WA WA WA.mp3";
-                bgVideo.src = "cryforme.mp4";
-                currentBPMInterval = 0.50; 
-            } else if (songId === 2) {
-                music.src = "[HQ] An Enigmatic Encounter V2 - Undertale Last Breath (Phase 3).mp3";
-                bgVideo.src = "enigmatic.mp4";
+                music.src = "mande.mp3";
+                bgVideo.src = "mande.mp4"; 
                 currentBPMInterval = 0.44; 
+            } else if (songId === 2) {
+                music.src = "Cry For Me WA WA WA.mp3";
+                bgVideo.src = "cryforme.mp4"; 
+                currentBPMInterval = 0.48; 
             } else if (songId === 3) {
+                music.src = "bl open.mp3";
+                bgVideo.src = "bl open.mp4"; 
+                currentBPMInterval = 0.46; 
+            } else if (songId === 4) {
                 music.src = "Girlfriends - New Computers.mp3";
-                bgVideo.src = "THE RESET.mp4";
-                currentBPMInterval = 0.46;
+                bgVideo.src = "THE RESET.mp4"; 
+                currentBPMInterval = 0.50;
+            } else if (songId === 5) {
+                music.src = "bachi.mp3";
+                bgVideo.src = "bachi.mp4"; 
+                currentBPMInterval = 0.42; 
+            } else if (songId === 6) {
+                music.src = "[HQ] An Enigmatic Encounter V2 - Undertale.mp3";
+                bgVideo.src = "enigmatic.mp4"; 
+                currentBPMInterval = 0.40;
             }
             launchGame();
         }
@@ -262,10 +377,13 @@
                 bgVideo.playbackRate = 1.0;
             }
 
-            bgVideo.load();
-            bgVideo.play();
             bgVideo.classList.add('pulse-active');
             
+            if (bgVideo.src) {
+                bgVideo.load();
+                bgVideo.play().catch(()=>{});
+            }
+
             music.play().then(() => {
                 isPlaying = true;
                 gameLoop();
@@ -283,25 +401,12 @@
             comboUiEl.style.opacity = "0";
         }
 
-        // [GÜNCELLENDİ] Güçlendirilmiş Çakışma Önleme Algoritması
         function moveAndSpawn() {
-            let startX, startY;
-            let overlap = true;
-            let attempts = 0;
+            let startX = Math.random() * (window.innerWidth - 300) + 150;
+            let startY = Math.random() * (window.innerHeight / 3) + (window.innerHeight / 2);
 
-            while (overlap && attempts < 25) {
-                // Ekran sınırlarına sıkışmayı engellemek için safe-zone aralıkları korundu
-                let rawX = Math.random() * (window.innerWidth - 450) + 225;
-                startX = activeMods.mirror ? (window.innerWidth - rawX) : rawX;
-                startY = Math.random() * (window.innerHeight/2 - 200) + window.innerHeight/2 + 50;
-                
-                // [YENİ] Mesafe kontrolü 220 piksele çıkarılarak butonların birbirine değmesi dahi engellendi
-                overlap = activeNotes.some(n => {
-                    let dx = n.startX - startX;
-                    let dy = n.startY - startY;
-                    return Math.sqrt(dx * dx + dy * dy) < 220; 
-                });
-                attempts++;
+            if (activeMods.mirror) {
+                startX = window.innerWidth - startX;
             }
             
             guide.style.left = startX + 'px'; guide.style.top = startY + 'px';
@@ -311,7 +416,7 @@
 
             let trailEl = null;
             let targetY = startY;
-            const holdDistance = 250;
+            const holdDistance = 200;
 
             if (isLong) {
                 targetY = startY - holdDistance;
@@ -341,7 +446,7 @@
             activeNotes.push({ 
                 el: nEl, app: aEl, trailEl: trailEl, code: item.code, scale: 3.5, hit: false, 
                 isLong: isLong, startX: startX, startY: startY, targetY: targetY, 
-                holdTicks: 0, maxTicks: 50, completed: false, spawnTime: performance.now()
+                holdTicks: 0, maxTicks: 40, completed: false
             });
             seqIndex = (seqIndex + 1) % sequence.length;
         }
@@ -362,7 +467,6 @@
                 targetInterval = targetInterval * 0.95; 
             }
 
-            // [YENİ] Ekranda aynı anda en fazla 2 buton kalabilir (Üst üste yığılmayı kökten keser)
             if (time - lastSpawnTime >= targetInterval) {
                 if (activeNotes.filter(n => !n.hit).length < 2) { 
                     moveAndSpawn();
@@ -375,7 +479,7 @@
                 const n = activeNotes[i];
                 if (!n.hit) {
                     if (!isHoldingAny) {
-                        n.scale -= (activeMods.fast ? 0.075 : 0.048); 
+                        n.scale -= (activeMods.fast ? 0.08 : 0.05); 
                         n.app.style.width = (90 * n.scale) + 'px';
                         n.app.style.height = (90 * n.scale) + 'px';
                         if (n.scale <= 0.65) { triggerShake(); removeNote(n); }
@@ -391,6 +495,11 @@
                         guide.style.left = n.startX + 'px'; guide.style.top = n.targetY + 'px';
                         n.el.style.top = currentY + 'px';
                         if(n.trailEl) n.trailEl.style.height = (n.startY - currentY) + 'px';
+                        
+                        if (n.holdTicks % 4 === 0) {
+                            spawnBurst(n.startX, currentY, n.el.style.borderColor);
+                        }
+
                         if (n.holdTicks >= n.maxTicks) { n.completed = true; successFinish(n); }
                     } else { triggerShake(); removeNote(n); }
                 }
@@ -398,20 +507,33 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // [YENİ] Sıralı Basım ve Güvenli Etkileşim Filtresi
+        function spawnBurst(x, y, color) {
+            const ring = document.createElement('div');
+            ring.className = 'burst-ring';
+            ring.style.left = x + 'px';
+            ring.style.top = y + 'px';
+            ring.style.width = '90px';
+            ring.style.height = '90px';
+            ring.style.borderColor = color;
+            ring.style.boxShadow = `0 0 20px ${color}`;
+            viewport.appendChild(ring);
+            setTimeout(() => ring.remove(), 250);
+        }
+
         function handleInteraction(code) {
             if (!isPlaying) return;
             keysPressed[code] = true;
             
-            // Aktif, vurulmamış ve geçerli scale aralığındaki notaları listele
-            let candidates = activeNotes.filter(n => n.code === code && n.scale >= 0.65 && n.scale <= 2.6 && !n.hit);
+            // Tuş algılama toleransı genişletildi (0.55 - 2.8 arası artık tıkır tıkır algılar)
+            let candidates = activeNotes.filter(n => n.code === code && n.scale >= 0.55 && n.scale <= 2.8 && !n.hit);
             
             if (candidates.length > 0) {
-                // [KRİTİK] İlk gelene (scale değeri en küçük olana) öncelik vererek sırayı garanti ediyoruz
                 candidates.sort((a, b) => a.scale - b.scale);
                 const n = candidates[0];
                 
                 n.hit = true;
+                spawnBurst(n.startX, n.startY, n.el.style.borderColor);
+
                 if (!n.isLong) successFinish(n); else if(n.app) n.app.remove();
             }
         }
@@ -431,15 +553,26 @@
             comboCountEl.innerText = combo; comboUiEl.style.opacity = "1";
             scoreEl.innerText = score.toString().padStart(6, '0');
             rankEl.innerText = getRank(score);
-            n.el.classList.add('hit-fx'); 
+            
+            // Yakalama halkasını anında temizle ama asıl tuş elementine animasyon süresi tanı
+            if(n.app) n.app.remove();
             if(n.trailEl) n.trailEl.remove();
+            
+            // Geri getirilen büyüme ve yok olma efekti
+            n.el.classList.add('hit-fx'); 
             setTimeout(() => removeNote(n), 220);
         }
 
         music.onended = () => {
             isPlaying = false;
             bgVideo.classList.remove('pulse-active');
+            bgVideo.pause();
             [...activeNotes].forEach(n => removeNote(n));
+            
+            const earnedXP = Math.floor(score * 0.15); 
+            addXP(earnedXP);
+
+            goXpEl.innerText = `+${earnedXP} XP KAZANILDI!`;
             goScore.innerText = score.toString().padStart(6, '0');
             goRank.innerText = getRank(score);
             gameOverScreen.classList.add('active');
