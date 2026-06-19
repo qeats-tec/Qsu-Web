@@ -32,7 +32,19 @@
         .pulse-active { animation: beatPulse 0.5s infinite ease-in-out; }
 
         #menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.95) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: 0.5s; }
-        .menu-content { text-align: center; max-height: 90vh; overflow-y: auto; padding: 20px; }
+        
+        .menu-content { 
+            text-align: center; 
+            max-height: 95vh; 
+            overflow-y: auto; 
+            padding: 20px; 
+            scrollbar-width: none; /* Firefox için çubuğu gizle */
+        }
+        /* Chrome, Safari ve Edge için çirkin beyaz kaydırma çubuğunu tamamen gizle */
+        .menu-content::-webkit-scrollbar {
+            display: none;
+        }
+
         h1 { font-size: 65px; letter-spacing: 15px; margin: 0; font-weight: 900; text-shadow: 0 0 30px rgba(0,210,255,0.4); }
         .version-badge { background: #00d2ff; color: black; padding: 5px 15px; border-radius: 50px; font-size: 11px; font-weight: bold; letter-spacing: 2px; display: inline-block; margin-bottom: 15px; }
         
@@ -41,21 +53,22 @@
         .xp-bar-bg { width: 200px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 8px; overflow: hidden; }
         .xp-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00d2ff, #ff00ff); transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        .mod-container { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .mod-section-title { font-size: 11px; color: #00d2ff; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; }
+        .mod-container { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; max-width: 500px; }
         .mod-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.3); color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; transition: 0.3s; backdrop-filter: blur(5px); }
         .mod-btn:hover { background: rgba(0, 210, 255, 0.2); }
         .mod-btn.active { background: #00d2ff; color: black; box-shadow: 0 0 20px rgba(0,210,255,0.5); border-color: transparent; }
+        .mod-btn.danger.active { background: #ff0055; color: white; box-shadow: 0 0 20px rgba(255,0,85,0.5); }
 
-        .btn-list { display: flex; flex-direction: column; gap: 10px; align-items: center; max-height: 40vh; overflow-y: auto; padding-right: 5px; }
+        .btn-list { display: flex; flex-direction: column; gap: 10px; align-items: center; max-height: 45vh; overflow-y: auto; padding-right: 5px; scrollbar-width: none; }
+        .btn-list::-webkit-scrollbar { display: none; }
+        
         .btn { position: relative; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 14px 30px; color: #fff; font-size: 14px; cursor: pointer; font-weight: bold; width: 450px; transition: 0.3s; border-radius: 10px; backdrop-filter: blur(5px); text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .btn:not(.locked):hover { background: #00d2ff; color: #000; box-shadow: 0 0 40px rgba(0,210,255,0.6); transform: translateY(-2px); }
         .btn.locked { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05); color: rgba(255,255,255,0.2); cursor: not-allowed; }
         .btn .badge { font-size: 10px; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,0.1); }
         .btn:not(.locked) .badge { background: rgba(0, 210, 255, 0.2); color: #00d2ff; }
         .btn:not(.locked):hover .badge { background: black; color: #00d2ff; }
-
-        .btn-list::-webkit-scrollbar { width: 6px; }
-        .btn-list::-webkit-scrollbar-thumb { background: rgba(0, 210, 255, 0.3); border-radius: 10px; }
 
         #custom-panel {
             position: absolute; top: 0; right: -350px; width: 300px; height: 100%;
@@ -76,12 +89,15 @@
         #guide { position: absolute; width: 35px; height: 35px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; box-shadow: 0 0 20px white; display: none; transition: 0.08s ease-out; }
         #combo-ui { position: absolute; bottom: 50px; width: 100%; text-align: center; font-size: 60px; font-weight: 900; z-index: 100; pointer-events: none; opacity: 0; transition: 0.1s; color: #00d2ff; text-shadow: 0 0 25px rgba(0,210,255,0.5); }
         
-        /* Yenilenen Zarif Tuş Tasarımı ve Efektleri */
-        .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; transition: background 0.1s, transform 0.05s; cursor: pointer; user-select: none; }
+        /* HP Bar */
+        #hp-container { position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: rgba(255,255,255,0.05); z-index: 1500; display: none; }
+        #hp-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #ff0055, #00d2ff); box-shadow: 0 0 15px #00d2ff; transition: width 0.1s ease-out; }
+
+        .note { position: absolute; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 45px; font-weight: 900; background: rgba(0, 0, 0, 0.8); z-index: 10; border: 4px solid; transition: background 0.1s, transform 0.05s, opacity 0.2s; cursor: pointer; user-select: none; }
         .note small { font-size: 10px; letter-spacing: 1px; margin-top: -5px; }
         .note.holding { background: rgba(255, 255, 255, 0.3) !important; transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 30px white; }
+        .note.hidden-fade { opacity: 0; transform: translate(-50%, -50%) scale(0.95); transition: opacity 0.25s ease-out, transform 0.25s ease-out; }
         
-        /* Geri Getirilen Yok Olma (Hit) Efekti */
         .note.hit-fx {
             animation: hitFadeOut 0.22s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
             pointer-events: none;
@@ -107,6 +123,7 @@
         #game-over-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2500; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
         #game-over-screen.active { opacity: 1; pointer-events: auto; }
         .go-title { font-size: 50px; font-weight: 900; letter-spacing: 10px; color: #00d2ff; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0,210,255,0.4); }
+        .go-title.failed { color: #ff0055; text-shadow: 0 0 20px rgba(255,0,85,0.4); }
         .go-stat { font-size: 24px; margin: 8px 0; font-weight: 600; letter-spacing: 2px; }
         .go-xp { font-size: 20px; color: #ff00ff; margin-bottom: 20px; font-weight: bold; }
         .go-rank { font-size: 100px; font-weight: 900; color: #ff00ff; text-shadow: 0 0 40px rgba(255,0,255,0.6); margin: 10px 0; }
@@ -141,7 +158,7 @@
 
         <div id="menu">
             <div class="menu-content">
-                <div class="version-badge">ALPHA v4.4 (FEELING UPDATE)</div>
+                <div class="version-badge">ALPHA v4.5 (HP & MODS UPDATE)</div>
                 <h1>Qsu!</h1>
                 
                 <div id="profile-card">
@@ -150,9 +167,12 @@
                     <div style="font-size:11px; opacity:0.5; margin-top:5px;"><span id="menu-xp-text">0 / 5000</span> XP</div>
                 </div>
                 
+                <div class="mod-section-title">Oyun Modları</div>
                 <div class="mod-container">
                     <button id="mod-mirror" class="mod-btn" onclick="toggleMod('mirror')">MIRROR</button>
                     <button id="mod-fast" class="mod-btn" onclick="toggleMod('fast')">DOUBLE TIME (1.5x)</button>
+                    <button id="mod-hidden" class="mod-btn" onclick="toggleMod('hidden')">HIDDEN (GİZLİ)</button>
+                    <button id="mod-sudden" class="mod-btn danger" onclick="toggleMod('sudden')">SUDDEN DEATH (💀)</button>
                 </div>
 
                 <div class="btn-list">
@@ -190,16 +210,15 @@
         
         <div id="guide"></div>
 
-        <div id="progress-bar-container">
-            <div id="progress-bar"></div>
-        </div>
+        <div id="hp-container"><div id="hp-bar"></div></div>
+        <div id="progress-bar-container"><div id="progress-bar"></div></div>
 
         <div id="game-over-screen">
-            <div class="go-title">ŞARKI TAMAMLANDI!</div>
+            <div class="go-title" id="go-title">ŞARKI TAMAMLANDI!</div>
             <div class="go-xp" id="go-xp">+0 XP KAZANILDI!</div>
             <div class="go-stat">TOPLAM SKOR: <span id="go-score">000000</span></div>
             <div class="go-rank" id="go-rank">C</div>
-            <button class="btn" onclick="returnToMenu()" style="margin-top: 20px; justify-content: center;">YENİDEN OYNA</button>
+            <button class="btn" onclick="returnToMenu()" style="margin-top: 20px; justify-content: center;">MENÜYE DÖN</button>
         </div>
     </div>
 
@@ -219,9 +238,12 @@
         const comboCountEl = document.getElementById('combo-count');
         const comboUiEl = document.getElementById('combo-ui');
         
+        const hpContainer = document.getElementById('hp-container');
+        const hpBar = document.getElementById('hp-bar');
         const progressBarContainer = document.getElementById('progress-bar-container');
         const progressBar = document.getElementById('progress-bar');
         const gameOverScreen = document.getElementById('game-over-screen');
+        const goTitle = document.getElementById('go-title');
         const goScore = document.getElementById('go-score');
         const goRank = document.getElementById('go-rank');
         const goXpEl = document.getElementById('go-xp');
@@ -235,10 +257,11 @@
 
         let score = 0;
         let combo = 0;
+        let hp = 100;
         let isPlaying = false;
         let activeNotes = [];
         let keysPressed = {};
-        let activeMods = { mirror: false, fast: false };
+        let activeMods = { mirror: false, fast: false, hidden: false, sudden: false };
 
         let lastSpawnTime = 0;
         let currentBPMInterval = 0.48; 
@@ -307,6 +330,14 @@
             return 'C';
         }
 
+        function updateHP(amount) {
+            hp = Math.max(0, Math.min(100, hp + amount));
+            hpBar.style.width = hp + '%';
+            if (hp <= 0) {
+                failGame();
+            }
+        }
+
         function start(songId) {
             if (player.level < songId) return;
 
@@ -357,17 +388,20 @@
             openBtn.style.display = 'none';
             ui.style.opacity = '1';
             guide.style.display = 'block';
+            hpContainer.style.display = 'block';
             progressBarContainer.style.display = 'block';
         }
 
         function launchGame() {
             score = 0;
             combo = 0;
+            hp = 100;
             lastSpawnTime = 0;
             scoreEl.innerText = "000000";
             rankEl.innerText = "C";
             comboCountEl.innerText = "0";
             comboUiEl.style.opacity = "0";
+            hpBar.style.width = '100%';
 
             if (activeMods.fast) {
                 music.playbackRate = 1.5;
@@ -399,6 +433,12 @@
             viewport.classList.add('shake');
             combo = 0;
             comboUiEl.style.opacity = "0";
+            
+            if (activeMods.sudden) {
+                failGame();
+            } else {
+                updateHP(-15); 
+            }
         }
 
         function moveAndSpawn() {
@@ -426,6 +466,7 @@
                 trailEl.style.top = targetY + 'px';
                 trailEl.style.width = '90px';
                 trailEl.style.height = holdDistance + 'px';
+                if (activeMods.hidden) trailEl.style.display = 'none'; 
                 viewport.appendChild(trailEl);
             }
 
@@ -440,9 +481,16 @@
             const aEl = document.createElement('div');
             aEl.className = 'approach'; aEl.style.left = startX+'px'; aEl.style.top = startY+'px';
             aEl.style.borderColor = item.color;
+            if (activeMods.hidden) aEl.style.display = 'none'; 
 
             viewport.appendChild(nEl); viewport.appendChild(aEl);
             
+            if (activeMods.hidden) {
+                setTimeout(() => {
+                    nEl.classList.add('hidden-fade');
+                }, 100);
+            }
+
             activeNotes.push({ 
                 el: nEl, app: aEl, trailEl: trailEl, code: item.code, scale: 3.5, hit: false, 
                 isLong: isLong, startX: startX, startY: startY, targetY: targetY, 
@@ -474,19 +522,24 @@
                 }
             }
 
+            updateHP(-0.04);
+
             const isHoldingAny = activeNotes.some(n => n.hit && n.isLong && !n.completed);
             for (let i = activeNotes.length - 1; i >= 0; i--) {
                 const n = activeNotes[i];
                 if (!n.hit) {
                     if (!isHoldingAny) {
                         n.scale -= (activeMods.fast ? 0.08 : 0.05); 
-                        n.app.style.width = (90 * n.scale) + 'px';
-                        n.app.style.height = (90 * n.scale) + 'px';
+                        if (!activeMods.hidden && n.app) {
+                            n.app.style.width = (90 * n.scale) + 'px';
+                            n.app.style.height = (90 * n.scale) + 'px';
+                        }
                         if (n.scale <= 0.65) { triggerShake(); removeNote(n); }
                     }
                 } else if (n.isLong && !n.completed) {
                     if (keysPressed[n.code]) {
                         n.holdTicks++;
+                        n.el.classList.remove('hidden-fade'); 
                         n.el.classList.add('holding');
                         if(n.trailEl) n.trailEl.classList.add('success');
                         score += 5; scoreEl.innerText = score.toString().padStart(6, '0');
@@ -507,6 +560,21 @@
             requestAnimationFrame(gameLoop);
         }
 
+        function failGame() {
+            isPlaying = false;
+            music.pause();
+            bgVideo.classList.remove('pulse-active');
+            bgVideo.pause();
+            [...activeNotes].forEach(n => removeNote(n));
+
+            goTitle.innerText = "ELENDİN! (FAILED)";
+            goTitle.classList.add('failed');
+            goXpEl.innerText = "+0 XP KAZANILDI (Şarkı bitirilemedi)";
+            goScore.innerText = score.toString().padStart(6, '0');
+            goRank.innerText = "F";
+            gameOverScreen.classList.add('active');
+        }
+
         function spawnBurst(x, y, color) {
             const ring = document.createElement('div');
             ring.className = 'burst-ring';
@@ -524,7 +592,6 @@
             if (!isPlaying) return;
             keysPressed[code] = true;
             
-            // Tuş algılama toleransı genişletildi (0.55 - 2.8 arası artık tıkır tıkır algılar)
             let candidates = activeNotes.filter(n => n.code === code && n.scale >= 0.55 && n.scale <= 2.8 && !n.hit);
             
             if (candidates.length > 0) {
@@ -553,17 +620,18 @@
             comboCountEl.innerText = combo; comboUiEl.style.opacity = "1";
             scoreEl.innerText = score.toString().padStart(6, '0');
             rankEl.innerText = getRank(score);
+            updateHP(8); 
             
-            // Yakalama halkasını anında temizle ama asıl tuş elementine animasyon süresi tanı
             if(n.app) n.app.remove();
             if(n.trailEl) n.trailEl.remove();
             
-            // Geri getirilen büyüme ve yok olma efekti
+            n.el.classList.remove('hidden-fade');
             n.el.classList.add('hit-fx'); 
             setTimeout(() => removeNote(n), 220);
         }
 
         music.onended = () => {
+            if (!isPlaying) return;
             isPlaying = false;
             bgVideo.classList.remove('pulse-active');
             bgVideo.pause();
@@ -572,6 +640,8 @@
             const earnedXP = Math.floor(score * 0.15); 
             addXP(earnedXP);
 
+            goTitle.innerText = "ŞARKI TAMAMLANDI!";
+            goTitle.classList.remove('failed');
             goXpEl.innerText = `+${earnedXP} XP KAZANILDI!`;
             goScore.innerText = score.toString().padStart(6, '0');
             goRank.innerText = getRank(score);
@@ -581,6 +651,7 @@
         function returnToMenu() {
             gameOverScreen.classList.remove('active');
             progressBarContainer.style.display = 'none';
+            hpContainer.style.display = 'none';
             ui.style.opacity = '0';
             guide.style.display = 'none';
             
